@@ -1,0 +1,51 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - dockerapicicdtest
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://andriidocker.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_74ef22571c7d42a9adc74a54a0e326d6 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_37a70c546740455d9e7cac7ef71f6ed1 }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: andriidocker.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_74ef22571c7d42a9adc74a54a0e326d6 }}/helloworld:${{ github.sha }}
+        file: ./Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'dockerapicicdtest'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_c673cc9343684d739a2e226f6d7f9497 }}
+        images: 'andriidocker.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_74ef22571c7d42a9adc74a54a0e326d6 }}/helloworld:${{ github.sha }}'
