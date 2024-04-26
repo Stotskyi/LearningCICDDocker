@@ -27,11 +27,12 @@ jobs:
         password: ${{ secrets.AzureAppService_ContainerPassword_37a70c546740455d9e7cac7ef71f6ed1 }}
 
     - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: andriidocker.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_74ef22571c7d42a9adc74a54a0e326d6 }}/helloworld:${{ github.sha }}
-        file: ./Dockerfile
+      run: dir
+    #  uses: docker/build-push-action@v3
+     # with:
+      #  push: true
+       # tags: andriidocker.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_74ef22571c7d42a9adc74a54a0e326d6 }}/helloworld:${{ github.sha }}
+        #file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
