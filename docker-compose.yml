@@ -1,0 +1,10 @@
+﻿services:
+  learningcicddocker:
+    build:
+      context: .
+      dockerfile: LearningCICDDocker/Dockerfile
+    image: andriidocker.azurecr.io/helloworld:latest
+    ports:
+      - "5000:8080"
+    
+
